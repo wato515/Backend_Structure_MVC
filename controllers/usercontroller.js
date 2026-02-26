@@ -4,17 +4,18 @@ const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
 
 exports.registerRoute = asyncHandler(async (req, res) => {
-    const {name, email, password} = req.body;
+    const {name, email, password, isAdmin} = req.body;
     const userExist = await User.findOne({email});
     if (userExist) {
         res.status(400);
         throw new Error("User already exists.")
     }
-    const user = await User.create({name, email, password});
+    const user = await User.create({name, email, password,isAdmin});
     res.status(201).json({
         _id:user._id,
         name:user.name,
-        email:user.email
+        email:user.email,
+        isAdmin:user.isAdmin
     });
 })
 
@@ -71,4 +72,26 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 exports.getUsers = asyncHandler(async (req, res) => {
     const users = await User.find({}).select("-password");
     res.json(users);
-})
+});
+
+exports.getuserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password");
+    console.log(user);
+    if(user){
+        res.json(user);
+    }else{
+        res.status(404);
+        throw new Error("User not found.");
+    }
+});
+
+exports.deleteUser = asyncHandler(async (req ,res) => {
+    const user = await User.findById(req.params.id);
+    if(user){
+        await user.deleteOne();
+        res.json({message:"Deleted Succssfully."});
+    }else{
+        res.status(404);
+        throw new Error("User not found.");
+    }
+});
