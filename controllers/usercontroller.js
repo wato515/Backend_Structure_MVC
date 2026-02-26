@@ -66,4 +66,9 @@ exports.updateProfile = asyncHandler(async (req, res) => {
         res.status(404);
         throw new Error("User not found");
     }
+});
+
+exports.getUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}).select("-password");
+    res.json(users);
 })
