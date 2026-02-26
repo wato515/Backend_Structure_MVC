@@ -1,6 +1,7 @@
 const asyncHandler = require("../middleware/asyncHandler");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const generateToken = require("../utils/generateToken");
 
 exports.registerRoute = asyncHandler(async (req, res) => {
     const {name, email, password} = req.body;
@@ -28,10 +29,15 @@ exports.loginRoute = asyncHandler(async (req, res) => {
         res.json({
             _id:user._id,
             name:user.name,
-            email:user.email
+            email:user.email,
+            token:generateToken(user._id)
         })
     }else {
         res.status(401);
         throw new Error("Invalid email or password.");
     }
 })
+
+exports.getProfile = asyncHandler(async (req, res) =>{
+    res.json(req.user);
+});
