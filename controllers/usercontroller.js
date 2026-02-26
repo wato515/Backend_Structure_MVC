@@ -23,8 +23,8 @@ exports.loginRoute = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({email});
 
-    const isMatch = await bcrypt.compare(password, user.password);
-
+//    const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await user.matchPassword(password);
     if (user && isMatch) {
         res.json({
             _id:user._id,
@@ -41,3 +41,29 @@ exports.loginRoute = asyncHandler(async (req, res) => {
 exports.getProfile = asyncHandler(async (req, res) =>{
     res.json(req.user);
 });
+
+exports.updateProfile = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    if(user){
+        user.name = req.body.name || user.name;
+        user.email = req.body.email || user.email;
+        
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(req.body.password, salt);
+        }
+        const updateProfile = await user.save();
+        res.json({
+            _id:updateProfile._id,
+            name:updateProfile.name,
+            email:updateProfile.email,
+            token:generateToken(req.user._id)
+        })
+        console.log(updateProfile._id);
+        console.log(req.user._id);
+    }
+    else {
+        res.status(404);
+        throw new Error("User not found");
+    }
+})
