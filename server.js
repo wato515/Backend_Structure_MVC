@@ -3,7 +3,7 @@ const express = require("express");
 const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
 const userRoutes = require("./routes/userRoutes");
-
+const productRoutes = require("./routes/productRoutes");
 const {notFound,errorHandler} = require("./middleware/errorMiddleware");
 
 const PORT = process.env.PORT || 5000;
@@ -14,6 +14,7 @@ connectDB();
 
 app.use("/students", studentRoutes);
 app.use("/api/users",userRoutes);
+app.use("/products", productRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
