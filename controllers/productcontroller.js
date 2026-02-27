@@ -117,3 +117,10 @@ exports.createProductReview = asyncHandler( async (req, res) => {
         throw new Error("Product not found.")
     }
 });
+
+exports.getTopRating = asyncHandler(async (req, res) => {
+    const ratingproducts = await Product.find({})
+                                        .sort({rating: -1})
+                                        .limit(3);
+    res.status(201).json(ratingproducts);
+})
