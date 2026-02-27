@@ -19,7 +19,7 @@ exports.getProductById = asyncHandler(async (req, res) => {
 exports.createProduct = asyncHandler(async (req ,res) => {
     const newproduct = new Product({
         user:req.user._id,
-        name:"Sample product",
+        name:"Lexus",
         image:"/images/sample.jpg",
         brand:"Sample brand",
         category:"Sample category",
@@ -66,3 +66,27 @@ exports.deleteProduct = asyncHandler(async (req, res) => {
         throw new Error("Product not found.");
     }
 });
+
+exports.getProductswithPagination = asyncHandler( async (req, res) => {
+    const page = parseInt(req.query.pageNumber) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1)*limit;
+    const search = req.query.search || "";
+
+    const query = {
+        name:{
+            $regex:search, $options:"i"
+        }
+    };
+
+    const products = await Product.find(query)
+                                  .skip(skip)
+                                  .limit(limit);
+    const total = await Product.countDocuments(query);
+
+    res.json({
+        products,
+        currentPage:page,
+        totalPage:Math.ceil(total/limit)
+    })
+})
