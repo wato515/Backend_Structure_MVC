@@ -17,7 +17,7 @@ exports.registerRoute = asyncHandler(async (req, res) => {
         email:user.email,
         isAdmin:user.isAdmin
     });
-})
+});
 
 exports.loginRoute = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
@@ -37,7 +37,7 @@ exports.loginRoute = asyncHandler(async (req, res) => {
         res.status(401);
         throw new Error("Invalid email or password.");
     }
-})
+});
 
 exports.getProfile = asyncHandler(async (req, res) =>{
     res.json(req.user);
@@ -70,8 +70,25 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 });
 
 exports.getUsers = asyncHandler(async (req, res) => {
-    const users = await User.find({}).select("-password");
-    res.json(users);
+    const pageSize = 5;
+    const page = Number(req.query.pageumber) || 1;
+    const keyword = req.query.keyword
+                    ?{
+                        name: {
+                            $regex : req.query.keyword,
+                            $options: "i",  //case-insensitive
+                        },
+                    }:{};
+    const count = await User.countDocuments({...keyword});
+    const users = await User.find({...keyword})
+                            .select("-password")
+                            .limit(pageSize)
+                            .skip(pageSize*(page-1));    
+    res.json({
+        users,
+        page,
+        pages: Math.ceil(count / pageSize),
+    });
 });
 
 exports.getuserById = asyncHandler(async (req, res) => {
