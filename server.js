@@ -4,7 +4,7 @@ const connectDB = require("./config/db");
 const studentRoutes = require("./routes/studentRoutes");
 const userRoutes = require("./routes/userRoutes");
 
-const errorHandler = require("./middleware/errorMiddleware");
+const {notFound,errorHandler} = require("./middleware/errorMiddleware");
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -14,6 +14,7 @@ connectDB();
 
 app.use("/students", studentRoutes);
 app.use("/api/users",userRoutes);
+app.use(notFound);
 app.use(errorHandler);
 
 app.listen(PORT, () => {

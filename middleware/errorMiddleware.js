@@ -1,12 +1,23 @@
+const notFound = (req, res, next) => {
+  const error = new Error(`Not Found - ${req.originalUrl}`);
+  res.status(404);
+  next(error);
+};
+
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let message = err.message;
 
-  res.status(res.statusCode === 200 ? 500 : res.statusCode);
+  // Handle MongoDB invalid ObjectId
+  if (err.name === "CastError" && err.kind === "ObjectId") {
+    message = "Resource not found";
+    statusCode = 404;
+  }
 
-  res.json({
-    message: err.message,
-    stack: process.env.NODE_ENV === "production" ? null : err.stack
+  res.status(statusCode).json({
+    message,
+    stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
 };
 
-module.exports = errorHandler;
+module.exports = { notFound, errorHandler };

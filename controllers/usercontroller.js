@@ -8,7 +8,7 @@ exports.registerRoute = asyncHandler(async (req, res) => {
     const userExist = await User.findOne({email});
     if (userExist) {
         res.status(400);
-        throw new Error("User already exists.")
+        throw new Error("User already exists.");
     }
     const user = await User.create({name, email, password,isAdmin});
     res.status(201).json({
@@ -71,7 +71,7 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
 exports.getUsers = asyncHandler(async (req, res) => {
     const pageSize = 5;
-    const page = Number(req.query.pageumber) || 1;
+    const page = Number(req.query.pageNumber) || 1;
     const keyword = req.query.keyword
                     ?{
                         name: {
