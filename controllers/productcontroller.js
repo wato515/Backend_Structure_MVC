@@ -89,4 +89,31 @@ exports.getProductswithPagination = asyncHandler( async (req, res) => {
         currentPage:page,
         totalPage:Math.ceil(total/limit)
     })
-})
+});
+
+exports.createProductReview = asyncHandler( async (req, res) => {
+    const {rating, comment} = req.body;
+    const existproduct = await Product.findById(req.params.id);
+    if(existproduct){
+        const alreadyreviewed = await existproduct.reviews.find((r) =>r.user.toString() === req.user._id.toString());
+        if(alreadyreviewed){
+            res.status(400);
+            throw new Error("Review is already Exist.");
+        }else{
+            const review = {
+                name:req.user.name,
+                rating:Number(rating),
+                comment:comment,
+                user:req.user._id
+            }
+            existproduct.reviews.push(review);
+            existproduct.numReviews = existproduct.reviews.length;
+            existproduct.rating = existproduct.reviews.reduce((acc, item) => item.rating + acc, 0)/existproduct.numReviews;
+            await existproduct.save();
+            res.status(201).json({message:"Review added.",existproduct})
+        }
+    }else {
+        res.status(404);
+        throw new Error("Product not found.")
+    }
+});
