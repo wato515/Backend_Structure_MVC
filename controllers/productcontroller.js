@@ -36,7 +36,7 @@ exports.createProduct = asyncHandler(async (req ,res) => {
 exports.updateProduct = asyncHandler( async (req, res) => {
     const {name, image, brand, category, description, price, conuntInStock} = req.body;
     
-    const product = await Product.findById(req. params.id);
+    const product = await Product.findById(req.params.id);
 
     if(product){
         product.name = name;

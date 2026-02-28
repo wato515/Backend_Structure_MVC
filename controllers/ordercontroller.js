@@ -35,3 +35,21 @@ exports.addOrderItems = asyncHandler(async (req, res) => {
             order: createdOrder});
     }
 });
+
+exports.getMyrorders = asyncHandler(async (req, res) => {
+    const myorder = await Order.find({user:req.user._id});
+    console.log(req.user._id);
+    console.log(myorder);
+    res.json(myorder);
+});
+
+exports.getOrderById = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+                             .populate("user", "name email");
+    if(order){
+        res.json(order);
+    }else{
+        res.status(404);
+        throw new Error("Order not found.");
+    }
+})
