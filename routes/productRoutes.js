@@ -3,9 +3,12 @@ const {getProductById, updateProduct, deleteProduct, getProducts, createProduct,
 const {protect, admin} = require("../middleware/authMiddleware");
 const router = express.Router();
 
+//the Static page route must be over the dynamic route.
+//Static page------example:"/top"
 router.route("/top")
       .get(protect, getTopRating);
 
+//dynamic page---------example:"/:id"
 router.route("/:id")
       .get(protect, admin, getProductById)
       .put(protect, admin, updateProduct)

@@ -114,7 +114,7 @@ exports.createProductReview = asyncHandler( async (req, res) => {
         }
     }else {
         res.status(404);
-        throw new Error("Product not found.")
+        throw new Error("Product not found.");
     }
 });
 
@@ -123,4 +123,4 @@ exports.getTopRating = asyncHandler(async (req, res) => {
                                         .sort({rating: -1})
                                         .limit(3);
     res.status(201).json(ratingproducts);
-})
+});
